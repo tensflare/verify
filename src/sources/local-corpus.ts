@@ -46,12 +46,12 @@ export class LocalCorpusAdapter implements SourceAdapter {
     }
 
     try {
-      const { Duct } = await import('@docfide/duct')
-      const duct = new Duct({ persistPath: this.corpusPath })
+      const ductMod: any = await import('@docfide/duct')
+      const duct: any = new ductMod.Duct({ persistPath: this.corpusPath })
       await duct.index(this.corpusPath)
-      const results = await duct.search(citation.normalized_text, 5)
+      const results: any[] = await duct.search(citation.normalized_text, 5)
 
-      const match = results.find(r =>
+      const match = results.find((r: any) =>
         r.chunk.content.toLowerCase().includes(citation.normalized_text.toLowerCase())
       )
 
