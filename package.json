@@ -1,0 +1,82 @@
+{
+  "name": "legalverify",
+  "version": "0.2.0",
+  "description": "Citation verification for the AI era — check whether legal citations exist and are still good law",
+  "type": "module",
+  "bin": {
+    "legalverify": "dist/cli.js",
+    "lv": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "SCOPE.md",
+    "COVERAGE.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "dev:web": "tsx src/api/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy:web": "npm run build && echo 'deploy to vercel/railway'"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "cheerio": "^1.0.0",
+    "commander": "^12.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.0",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^2.5.0",
+    "p-limit": "^6.0.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.22.0"
+  },
+  "optionalDependencies": {
+    "@docfide/duct": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tensflare/verify.git"
+  },
+  "homepage": "https://github.com/tensflare/verify#readme",
+  "bugs": {
+    "url": "https://github.com/tensflare/verify/issues"
+  },
+  "keywords": [
+    "legal",
+    "citation",
+    "verify",
+    "hallucination",
+    "ai",
+    "compliance",
+    "ny-part-161"
+  ],
+  "author": "Tensflare Inc.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

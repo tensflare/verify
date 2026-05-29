@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LegalVerify — Social Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3B6D11;
+    --text: #111110;
+    --text-secondary: #5F5E5A;
+    --bg: #F8F7F4;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  /* Fixed aspect ratio 1200x630 container for perfect social media preview screenshots */
+  .preview-container {
+    width: 1200px;
+    height: 630px;
+    background-color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    /* Subtle radial gradient for depth in light mode */
+    background-image: radial-gradient(circle at 50% 30%, #FFFFFF 0%, #F8F7F4 100%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid #EBEAE4;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    user-select: none;
+    margin-bottom: 48px;
+    margin-top: -20px;
+  }
+
+  .logo-icon {
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+  }
+
+  .logo-icon svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .logo-wordmark {
+    font-family: var(--font-sans);
+    font-size: 110px;
+    font-weight: 500;
+    letter-spacing: -3.5px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .logo-wordmark span {
+    color: var(--green);
+  }
+
+  .logo-tagline {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    letter-spacing: 5.5px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-left: 4px;
+  }
+
+  .description {
+    font-size: 34px;
+    color: #4A4A48;
+    text-align: center;
+    max-width: 960px;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+  
+  .description strong {
+    color: #111110;
+    font-weight: 500;
+  }
+
+  .url {
+    position: absolute;
+    bottom: 56px;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .url svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-container">
+  <div class="logo">
+    <div class="logo-icon">
+      <!-- Scaled up SVG icon from logo.html (on white variant) -->
+      <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer dashed ring -->
+        <circle cx="70" cy="70" r="62" stroke="#888780" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- Inner solid ring -->
+        <circle cx="70" cy="70" r="38" stroke="#111110" stroke-width="2.5"/>
+        <!-- Crosshair arms -->
+        <line x1="4"  y1="70" x2="32" y2="70" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="108" y1="70" x2="136" y2="70" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="70" y1="4"  x2="70" y2="32" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="70" y1="108" x2="70" y2="136" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Corner brackets -->
+        <polyline points="20,20 36,20 36,36" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="120,20 104,20 104,36" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="20,120 36,120 36,104" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="120,120 104,120 104,104" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Citation text -->
+        <text x="70" y="64" font-family="'DM Mono', monospace" font-size="10" fill="#3B6D11" text-anchor="middle" letter-spacing="0.5">410 U.S.</text>
+        <text x="70" y="76" font-family="'DM Mono', monospace" font-size="10" fill="#3B6D11" text-anchor="middle" letter-spacing="0.5">113 (1973)</text>
+        <!-- Verified tick -->
+        <polyline points="62,86 67,92 79,80" fill="none" stroke="#3B6D11" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <div class="logo-wordmark">Legal<span>Verify</span></div>
+      <div class="logo-tagline">Citation Verification for the AI Era</div>
+    </div>
+  </div>
+
+  <div class="description">
+    The standard for <strong>validating</strong> and <strong>verifying</strong> AI-generated legal citations.
+  </div>
+
+  <div class="url">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </svg>
+    github.com/tensflare/legalverify
+  </div>
+</div>
+
+</body>
+</html>
