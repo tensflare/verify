@@ -1,5 +1,8 @@
 import type { VerifiableCitation } from '../schema.js'
 import type { SourceAdapter, SourceResult, CoverageResult } from './types.js'
+import { createRequire } from 'node:module'
+
+const _require = createRequire(import.meta.url)
 
 export class LocalCorpusAdapter implements SourceAdapter {
   readonly name = 'Local Corpus'
@@ -46,7 +49,7 @@ export class LocalCorpusAdapter implements SourceAdapter {
     }
 
     try {
-      const ductMod: any = await import('@docfide/duct')
+      const ductMod: any = _require('@docfide/duct')
       const duct: any = new ductMod.Duct({ persistPath: this.corpusPath })
       await duct.index(this.corpusPath)
       const results: any[] = await duct.search(citation.normalized_text, 5)
