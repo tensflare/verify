@@ -1,32 +1,24 @@
 import { createHash } from 'node:crypto'
 import express from 'express'
+import type { Express } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import { resolve, dirname } from 'node:path'
+import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { CitationVerifier } from '../index.js'
 import { generateComplianceReport } from '../compliance/rules.js'
 import { formatCoverageMap } from '../verify/coverage.js'
 import { generateVerificationPdf } from '../report/pdf.js'
 import { SqliteStore } from '../store/sqlite.js'
+import { TiDBStore } from '../store/tidb.js'
 import { createAuthRoutes } from '../auth/routes.js'
 import { optionalAuth } from '../auth/middleware.js'
+import type { Store } from '../store/index.js'
 
-interface ServerOptions {
-  port?: number
-  host?: string
-  dbPath?: string
-}
-
-export async function startServer(opts: ServerOptions = {}): Promise<void> {
-  const port = opts.port ?? 3579
-  const host = opts.host ?? 'localhost'
-  const dbPath = opts.dbPath ?? process.env['LEGALVERIFY_DB_PATH'] ?? './legalverify.db'
-
+export function createApp(store: Store): Express {
   const app = express()
   const verifier = new CitationVerifier()
-  const store = new SqliteStore(dbPath)
-  await store.initialize()
 
   app.use(helmet({ contentSecurityPolicy: false }))
   app.use(cors())
@@ -34,7 +26,9 @@ export async function startServer(opts: ServerOptions = {}): Promise<void> {
 
   // Serve web UI
   const __dirname = dirname(fileURLToPath(import.meta.url))
-  const publicPath = resolve(__dirname, '..', 'web', 'public')
+  const localPublicPath = resolve(__dirname, '..', 'web', 'public')
+  const rootPublicPath = resolve(__dirname, '..', '..', 'public')
+  const publicPath = existsSync(rootPublicPath) ? rootPublicPath : localPublicPath
   app.use(express.static(publicPath))
 
   // Auth routes
@@ -179,7 +173,30 @@ export async function startServer(opts: ServerOptions = {}): Promise<void> {
     }
   })
 
+  return app
+}
+
+export async function startServer(opts: ServerOptions = {}): Promise<void> {
+  const port = opts.port ?? 3579
+  const host = opts.host ?? 'localhost'
+  const dbPath = opts.dbPath ?? process.env['LEGALVERIFY_DB_PATH'] ?? './legalverify.db'
+
+  let store: Store
+  if (process.env['TIDB_HOST']) {
+    store = new TiDBStore()
+  } else {
+    store = new SqliteStore(dbPath)
+  }
+  await store.initialize()
+
+  const app = createApp(store)
   app.listen(port, host, () => {
     console.log(`LegalVerify server listening on http://${host}:${port}`)
   })
+}
+
+interface ServerOptions {
+  port?: number
+  host?: string
+  dbPath?: string
 }

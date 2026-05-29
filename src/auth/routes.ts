@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import type { SqliteStore } from '../store/sqlite.js'
+import type { Store } from '../store/index.js'
 import { generateMagicToken, verifyMagicToken, issueJwt } from './magic.js'
 import { generateApiKey, verifyApiKey } from './keys.js'
 import { authMiddleware } from './middleware.js'
 
-export function createAuthRoutes(store: SqliteStore): Router {
+export function createAuthRoutes(store: Store): Router {
   const router = Router()
 
   router.post('/auth/magic/request', async (req, res) => {

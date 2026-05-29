@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LegalVerify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #3B6D11;
+  --green-mid: #639922;
+  --green-light: #EAF3DE;
+  --text: #111110;
+  --text-secondary: #888780;
+  --text-tertiary: #B4B2A9;
+  --border: rgba(0,0,0,0.12);
+  --bg: #F8F7F4;
+  --surface: #FFFFFF;
+  --red: #c92a2a;
+  --yellow: #d4900c;
+  --font-sans: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
+.container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* Logo / Header */
+header { margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo svg { flex-shrink: 0; }
+.logo-text { display: flex; flex-direction: column; gap: 2px; }
+.logo-wordmark { font-family: var(--font-sans); font-size: 1.6rem; font-weight: 500; letter-spacing: -1px; line-height: 1; color: var(--text); }
+.logo-wordmark span { color: var(--green); }
+.logo-tagline { font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 2px; color: var(--text-secondary); text-transform: uppercase; }
+
+/* Auth bar */
+.auth-bar { display: flex; align-items: center; gap: 0.75rem; }
+.auth-bar .user-email { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
+.auth-btn { padding: 0.4rem 0.9rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-family: var(--font-sans); font-size: 0.8rem; color: var(--text); cursor: pointer; transition: all 0.15s; }
+.auth-btn:hover { border-color: var(--green); color: var(--green); }
+.auth-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+.auth-btn.primary:hover { background: var(--green-mid); }
+
+/* Scope notice */
+.scope-notice { margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; color: var(--text-secondary); border-left: 3px solid var(--green); }
+
+/* Textarea */
+textarea { width: 100%; min-height: 180px; padding: 1rem; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--green); }
+
+/* Toolbar */
+.toolbar { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; align-items: center; }
+.toolbar .spacer { flex: 1; }
+.btn { padding: 0.5rem 1.25rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-family: var(--font-sans); font-size: 0.85rem; color: var(--text); cursor: pointer; transition: all 0.15s; }
+.btn:hover { border-color: var(--green); }
+.btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+.btn.primary:hover { background: var(--green-mid); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; }
+label input[type="checkbox"] { accent-color: var(--green); width: 14px; height: 14px; }
+
+/* Status */
+#status { font-size: 0.8rem; color: var(--text-secondary); padding: 0.3rem 0; display: flex; align-items: center; gap: 0.4rem; }
+
+/* Spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Loading skeleton */
+.skeleton { background: linear-gradient(90deg, var(--border) 25%, transparent 50%, var(--border) 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: 6px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.skeleton-card { height: 72px; border-radius: 8px; background: var(--border); position: relative; overflow: hidden; }
+.skeleton-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+.skeleton-list { height: 120px; border-radius: 8px; background: var(--border); position: relative; overflow: hidden; margin-bottom: 1rem; }
+.skeleton-list::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+
+/* Results */
+.results { margin-top: 1.5rem; display: none; }
+.results.visible { display: block; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+.stat-card { padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+.stat-card .num { font-size: 1.75rem; font-weight: 500; letter-spacing: -0.5px; }
+.stat-card .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+.stat-card.green .num { color: var(--green); }
+.stat-card.red .num { color: var(--red); }
+.stat-card.yellow .num { color: var(--yellow); }
+
+/* Citation list */
+.citation-list { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.citation-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.citation-item:last-child { border-bottom: none; }
+.citation-item .text { font-family: var(--font-mono); font-size: 0.8rem; flex: 1; word-break: break-word; }
+.status-badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 500; white-space: nowrap; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.3px; }
+.status-badge.verified { background: var(--green-light); color: var(--green); }
+.status-badge.hallucinated { background: rgba(201, 42, 42, 0.1); color: var(--red); }
+.status-badge.unverifiable { background: rgba(212, 144, 12, 0.1); color: var(--yellow); }
+
+/* Compliance box */
+.compliance-box { margin-top: 1rem; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
+.compliance-box.pass { border-left: 3px solid var(--green); }
+.compliance-box.fail { border-left: 3px solid var(--red); }
+.compliance-box h3 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.4rem; }
+.compliance-box .summary { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Error box */
+.error-box { margin-top: 1rem; padding: 1rem; background: rgba(201, 42, 42, 0.06); border: 1px solid rgba(201, 42, 42, 0.2); border-radius: 8px; display: none; }
+.error-box.visible { display: block; }
+.error-box .error-title { font-size: 0.85rem; font-weight: 500; color: var(--red); margin-bottom: 0.3rem; }
+.error-box .error-detail { font-size: 0.8rem; color: var(--text-secondary); }
+.error-box .error-retry { margin-top: 0.5rem; }
+
+/* Empty state */
+.empty-state { margin-top: 1.5rem; text-align: center; padding: 3rem 1rem; color: var(--text-tertiary); }
+.empty-state p { font-size: 0.9rem; }
+.empty-state .hint { font-size: 0.8rem; margin-top: 0.5rem; }
+
+/* API key panel */
+.api-panel { margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.api-panel-header { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.api-panel-header h3 { font-size: 0.9rem; font-weight: 500; }
+.api-panel-body { padding: 0.75rem 1rem; }
+.api-key-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.api-key-row:last-child { border-bottom: none; }
+.api-key-row .key-label { font-weight: 500; }
+.api-key-row .key-prefix { font-family: var(--font-mono); color: var(--text-secondary); }
+.api-key-row .key-actions { display: flex; gap: 0.4rem; }
+.api-key-row .key-actions button { padding: 0.2rem 0.5rem; font-size: 0.7rem; border-radius: 4px; }
+.api-key-display { background: var(--bg); padding: 0.75rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all; margin: 0.5rem 0; border: 1px solid var(--border); }
+
+/* Magic link form */
+.magic-form { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+.magic-form input { padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font-sans); font-size: 0.8rem; background: var(--surface); flex: 1; min-width: 180px; }
+.magic-form input:focus { outline: none; border-color: var(--green); }
+
+/* Modal overlay */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+.modal-overlay.visible { display: flex; }
+.modal { background: var(--surface); border-radius: 12px; padding: 1.5rem; max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.75rem; }
+.modal p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+.modal .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
+
+/* Utility */
+.hidden { display: none !important; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.text-sm { font-size: 0.8rem; }
+.text-secondary { color: var(--text-secondary); }
+
+/* PDF button */
+.download-btn { margin-top: 0.75rem; }
+
+@media (max-width: 600px) {
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  textarea { min-height: 140px; }
+  header { flex-direction: row; }
+  .auth-bar { width: auto; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">
+      <svg width="38" height="38" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="70" cy="70" r="62" stroke="#B4B2A9" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <circle cx="70" cy="70" r="38" stroke="#111110" stroke-width="2.5"/>
+        <line x1="4" y1="70" x2="32" y2="70" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="108" y1="70" x2="136" y2="70" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="70" y1="4" x2="70" y2="32" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="70" y1="108" x2="70" y2="136" stroke="#111110" stroke-width="2.5" stroke-linecap="round"/>
+        <polyline points="20,20 36,20 36,36" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="120,20 104,20 104,36" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="20,120 36,120 36,104" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="120,120 104,120 104,104" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="70" y="66" font-family="'DM Mono',monospace" font-size="10" fill="#3B6D11" text-anchor="middle" letter-spacing="0.5">410 U.S.</text>
+        <text x="70" y="78" font-family="'DM Mono',monospace" font-size="10" fill="#3B6D11" text-anchor="middle" letter-spacing="0.5">113 (1973)</text>
+        <polyline points="62,88 67,94 79,82" fill="none" stroke="#3B6D11" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="logo-text">
+        <div class="logo-wordmark">Legal<span>Verify</span></div>
+        <div class="logo-tagline">Citation Verification for the AI Era</div>
+      </div>
+    </div>
+    <div class="auth-bar" id="authBar">
+      <span class="user-email hidden" id="userEmail"></span>
+      <button class="auth-btn hidden" id="loginBtn" onclick="showLoginModal()">Log in</button>
+      <button class="auth-btn hidden" id="apiKeysBtn" onclick="toggleApiPanel()">API Keys</button>
+      <button class="auth-btn hidden" id="logoutBtn" onclick="logout()">Log out</button>
+    </div>
+  </header>
+
+  <div class="scope-notice">
+    <strong>Scope:</strong> LegalVerify verifies citation <em>existence</em> (does this source exist?).
+    It does <strong>not</strong> verify proposition accuracy (does this source say what was claimed?).
+    Attorneys remain independently responsible for proposition review.
+  </div>
+
+  <textarea id="textInput" placeholder="Paste legal text with citations to verify...&#10;&#10;Example:&#10;The Court held in Roe v. Wade, 410 U.S. 113 that...&#10;See also Miranda v. Arizona, 384 U.S. 436 (1966)"></textarea>
+
+  <div class="toolbar">
+    <button class="btn primary" id="verifyBtn" onclick="verify()">Verify Citations</button>
+    <label>
+      <input type="checkbox" id="complianceCheckbox" checked>
+      NY Part 161 check
+    </label>
+    <span class="spacer"></span>
+    <span id="status"></span>
+  </div>
+
+  <div id="error" class="error-box"></div>
+
+  <!-- Loading skeletons -->
+  <div id="skeletonArea" class="hidden">
+    <div class="skeleton-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+    <div class="skeleton-list"></div>
+    <div class="skeleton-list" style="height:80px;"></div>
+  </div>
+
+  <div id="results" class="results">
+    <div class="summary-grid" id="summaryGrid"></div>
+    <div id="complianceContainer"></div>
+    <div id="downloadArea" class="download-btn"></div>
+    <h3 style="margin-bottom:0.75rem;font-size:0.85rem;color:var(--text-secondary);font-weight:500;">Citations Found</h3>
+    <div class="citation-list" id="citationList"></div>
+  </div>
+
+  <div id="emptyState" class="empty-state">
+    <p>No results yet</p>
+    <p class="hint">Paste some legal text above and click <strong>Verify Citations</strong></p>
+  </div>
+
+  <!-- Login modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal">
+      <h3>Log in to LegalVerify</h3>
+      <p>Enter your email to receive a magic link. Logged-in users can create API keys and save to the citation index.</p>
+      <div style="margin-bottom:1rem;">
+        <input type="email" id="loginEmail" placeholder="you@example.com" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--surface);" onkeydown="if(event.key==='Enter')requestMagicLink()">
+      </div>
+      <button class="btn primary" onclick="requestMagicLink()" id="magicLinkBtn" style="width:100%;">Send Magic Link</button>
+      <div id="magicStatus" class="text-sm text-secondary mt-1"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeLoginModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key panel -->
+  <div class="api-panel hidden" id="apiPanel">
+    <div class="api-panel-header">
+      <h3>API Keys</h3>
+      <button class="btn" onclick="closeApiPanel()" style="font-size:0.8rem;">Close</button>
+    </div>
+    <div class="api-panel-body">
+      <div id="apiKeyList"></div>
+      <div class="mt-2">
+        <input type="text" id="newKeyLabel" placeholder="Key label (e.g. 'CI pipeline')" style="padding:0.4rem 0.75rem;border:1px solid var(--border);border-radius:6px;font-size:0.8rem;width:100%;margin-bottom:0.5rem;">
+        <button class="btn primary" onclick="createApiKey()" style="width:100%;">Generate New Key</button>
+      </div>
+      <div id="newKeyDisplay" class="hidden mt-1">
+        <p class="text-sm text-secondary">Copy this key now — you won't see it again:</p>
+        <div class="api-key-display" id="newKeyValue"></div>
+        <button class="btn" onclick="dismissNewKey()" style="font-size:0.8rem;">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// State
+let authToken = localStorage.getItem('lv_token')
+let authEmail = localStorage.getItem('lv_email')
+
+function init() {
+  updateAuthUI()
+  if (!document.getElementById('textInput').value.trim()) {
+    document.getElementById('emptyState').style.display = 'block'
+  }
+}
+
+function updateAuthUI() {
+  const loginBtn = document.getElementById('loginBtn')
+  const logoutBtn = document.getElementById('logoutBtn')
+  const apiKeysBtn = document.getElementById('apiKeysBtn')
+  const userEmail = document.getElementById('userEmail')
+
+  if (authToken && authEmail) {
+    loginBtn.classList.add('hidden')
+    logoutBtn.classList.remove('hidden')
+    apiKeysBtn.classList.remove('hidden')
+    userEmail.classList.remove('hidden')
+    userEmail.textContent = authEmail
+  } else {
+    loginBtn.classList.remove('hidden')
+    logoutBtn.classList.add('hidden')
+    apiKeysBtn.classList.add('hidden')
+    userEmail.classList.add('hidden')
+  }
+}
+
+// Auth: Magic link
+function showLoginModal() {
+  document.getElementById('loginModal').classList.add('visible')
+  document.getElementById('loginEmail').focus()
+  document.getElementById('magicStatus').textContent = ''
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('visible')
+}
+
+async function requestMagicLink() {
+  const email = document.getElementById('loginEmail').value.trim()
+  if (!email) return
+
+  const btn = document.getElementById('magicLinkBtn')
+  const status = document.getElementById('magicStatus')
+  btn.disabled = true
+  status.textContent = 'Sending...'
+
+  try {
+    const res = await fetch('/auth/magic/request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Request failed')
+
+    // Dev mode: token returned directly
+    if (data.token) {
+      const verifyRes = await fetch('/auth/magic/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: data.token, email }),
+      })
+      const verifyData = await verifyRes.json()
+      if (verifyData.token) {
+        authToken = verifyData.token
+        authEmail = verifyData.email
+        localStorage.setItem('lv_token', authToken)
+        localStorage.setItem('lv_email', authEmail)
+        updateAuthUI()
+        closeLoginModal()
+        status.textContent = 'Logged in!'
+      } else {
+        throw new Error(verifyData.error || 'Verification failed')
+      }
+    } else {
+      status.textContent = 'Magic link sent! Check your email.'
+    }
+  } catch (err) {
+    status.textContent = 'Error: ' + err.message
+  } finally {
+    btn.disabled = false
+  }
+}
+
+function logout() {
+  authToken = null
+  authEmail = null
+  localStorage.removeItem('lv_token')
+  localStorage.removeItem('lv_email')
+  updateAuthUI()
+  document.getElementById('apiPanel').classList.add('hidden')
+}
+
+// API Keys
+function toggleApiPanel() {
+  const panel = document.getElementById('apiPanel')
+  if (panel.classList.contains('hidden')) {
+    panel.classList.remove('hidden')
+    loadApiKeys()
+  } else {
+    panel.classList.add('hidden')
+  }
+}
+
+function closeApiPanel() {
+  document.getElementById('apiPanel').classList.add('hidden')
+}
+
+async function loadApiKeys() {
+  if (!authToken) return
+  try {
+    const res = await fetch('/auth/keys', {
+      headers: { 'Authorization': `Bearer ${authToken}` },
+    })
+    if (!res.ok) throw new Error('Failed to load keys')
+    const keys = await res.json()
+    const list = document.getElementById('apiKeyList')
+    if (keys.length === 0) {
+      list.innerHTML = '<p class="text-sm text-secondary">No API keys yet.</p>'
+      return
+    }
+    list.innerHTML = keys.map(k => `
+      <div class="api-key-row">
+        <div>
+          <div class="key-label">${escapeHtml(k.label)}</div>
+          <div class="key-prefix">${escapeHtml(k.keyPrefix)}…</div>
+        </div>
+        <div class="key-actions">
+          <button class="btn" onclick="revokeApiKey('${k.id}')" style="color:var(--red);">Revoke</button>
+        </div>
+      </div>
+    `).join('')
+  } catch (err) {
+    document.getElementById('apiKeyList').innerHTML = `<p class="text-sm text-secondary">Error: ${err.message}</p>`
+  }
+}
+
+async function createApiKey() {
+  const label = document.getElementById('newKeyLabel').value.trim()
+  if (!label) return
+
+  try {
+    const res = await fetch('/auth/keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify({ label }),
+    })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || 'Failed')
+    document.getElementById('newKeyDisplay').classList.remove('hidden')
+    document.getElementById('newKeyValue').textContent = data.apiKey
+    document.getElementById('newKeyLabel').value = ''
+    loadApiKeys()
+  } catch (err) {
+    alert('Error: ' + err.message)
+  }
+}
+
+function dismissNewKey() {
+  document.getElementById('newKeyDisplay').classList.add('hidden')
+}
+
+async function revokeApiKey(id) {
+  if (!confirm('Revoke this API key? This cannot be undone.')) return
+  try {
+    const res = await fetch(`/auth/keys/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${authToken}` },
+    })
+    if (!res.ok) throw new Error('Failed to revoke')
+    loadApiKeys()
+  } catch (err) {
+    alert('Error: ' + err.message)
+  }
+}
+
+// Verification
+async function verify() {
+  const text = document.getElementById('textInput').value.trim()
+  if (!text) return
+
+  const btn = document.getElementById('verifyBtn')
+  const status = document.getElementById('status')
+  const results = document.getElementById('results')
+  const errorEl = document.getElementById('error')
+  const skeleton = document.getElementById('skeletonArea')
+  const emptyState = document.getElementById('emptyState')
+
+  btn.disabled = true
+  status.innerHTML = '<span class="spinner"></span> Verifying...'
+  results.classList.remove('visible')
+  errorEl.classList.remove('visible')
+  emptyState.style.display = 'none'
+  skeleton.classList.remove('hidden')
+  document.getElementById('downloadArea').innerHTML = ''
+
+  try {
+    const checkCompliance = document.getElementById('complianceCheckbox').checked
+    const headers = { 'Content-Type': 'application/json' }
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`
+
+    let data
+    if (checkCompliance) {
+      const res = await fetch('/verify-and-comply', {
+        method: 'POST', headers,
+        body: JSON.stringify({ text, documentName: 'Web UI' }),
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`)
+      data = await res.json()
+      renderResults(data.verification, data.compliance)
+    } else {
+      const res = await fetch('/verify', {
+        method: 'POST', headers,
+        body: JSON.stringify({ text, documentName: 'Web UI' }),
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`)
+      data = await res.json()
+      renderResults(data)
+    }
+  } catch (err) {
+    showError(err.message)
+  } finally {
+    btn.disabled = false
+    status.textContent = ''
+    skeleton.classList.add('hidden')
+  }
+}
+
+function showError(message) {
+  const errorEl = document.getElementById('error')
+  errorEl.innerHTML = `
+    <div class="error-title">Verification failed</div>
+    <div class="error-detail">${escapeHtml(message)}</div>
+    <button class="btn error-retry" onclick="verify()">Try again</button>
+  `
+  errorEl.classList.add('visible')
+}
+
+function renderResults(verification, compliance) {
+  const results = document.getElementById('results')
+  results.classList.add('visible')
+
+  // Summary
+  const grid = document.getElementById('summaryGrid')
+  grid.innerHTML = ''
+  const stats = [
+    { label: 'Total Citations', num: verification.total_citations, cls: '' },
+    { label: 'Verified', num: verification.verified_count, cls: 'green' },
+    { label: 'Hallucinated', num: verification.hallucinated_count, cls: 'red' },
+    { label: 'Unverifiable', num: verification.unverifiable_count, cls: 'yellow' },
+    { label: 'Confidence', num: (verification.overall_score * 100).toFixed(0) + '%', cls: 'green' },
+    { label: 'Duration', num: verification.duration_ms + 'ms', cls: '' },
+  ]
+  stats.forEach(s => {
+    const card = document.createElement('div')
+    card.className = 'stat-card' + (s.cls ? ' ' + s.cls : '')
+    card.innerHTML = `<div class="num">${s.num}</div><div class="label">${s.label}</div>`
+    grid.appendChild(card)
+  })
+
+  // Compliance
+  const cc = document.getElementById('complianceContainer')
+  cc.innerHTML = ''
+  if (compliance) {
+    const box = document.createElement('div')
+    box.className = 'compliance-box ' + (compliance.passed ? 'pass' : 'fail')
+    box.innerHTML = `
+      <h3>${compliance.passed ? 'Pass' : 'Fail'} — ${compliance.standard}</h3>
+      <div class="summary">${compliance.summary}</div>
+      <div class="text-sm text-secondary mt-1">Jurisdiction: ${compliance.jurisdiction} | Score: ${(compliance.score * 100).toFixed(0)}% | Expires: ${new Date(compliance.expires_at).toLocaleDateString()}</div>
+    `
+    cc.appendChild(box)
+  }
+
+  // PDF download
+  const da = document.getElementById('downloadArea')
+  da.innerHTML = ''
+  const pdfBtn = document.createElement('button')
+  pdfBtn.className = 'btn'
+  pdfBtn.textContent = 'Download PDF Report'
+  pdfBtn.onclick = () => downloadPdf(verification, compliance)
+  da.appendChild(pdfBtn)
+
+  // Citation list
+  const list = document.getElementById('citationList')
+  list.innerHTML = ''
+  if (verification.citations.length === 0) {
+    list.innerHTML = '<div class="citation-item" style="color:var(--text-tertiary);">No citations found in the provided text</div>'
+    return
+  }
+  verification.citations.forEach(cv => {
+    const item = document.createElement('div')
+    item.className = 'citation-item'
+    const statusText = cv.status.charAt(0).toUpperCase() + cv.status.slice(1)
+    item.innerHTML = `
+      <div class="text">${escapeHtml(cv.citation.raw_text)}</div>
+      <span class="status-badge ${cv.status}">${statusText}</span>
+    `
+    list.appendChild(item)
+  })
+}
+
+async function downloadPdf(verification, compliance) {
+  try {
+    const res = await fetch('/report/pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verification, compliance }),
+    })
+    if (!res.ok) throw new Error('PDF generation failed')
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `legalverify-${verification.document_name || 'report'}-${Date.now()}.pdf`
+    a.click()
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    alert('PDF download failed: ' + err.message)
+  }
+}
+
+function escapeHtml(s) {
+  if (typeof s !== 'string') return ''
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+document.addEventListener('DOMContentLoaded', init)
+</script>
+</body>
+</html>
