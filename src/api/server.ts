@@ -10,8 +10,7 @@ import { CitationVerifier } from '../index.js'
 import { generateComplianceReport } from '../compliance/rules.js'
 import { formatCoverageMap } from '../verify/coverage.js'
 import { generateVerificationPdf } from '../report/pdf.js'
-import { SqliteStore } from '../store/sqlite.js'
-import { TiDBStore } from '../store/tidb.js'
+
 import { createAuthRoutes } from '../auth/routes.js'
 import { optionalAuth } from '../auth/middleware.js'
 import type { Store } from '../store/index.js'
@@ -183,8 +182,10 @@ export async function startServer(opts: ServerOptions = {}): Promise<void> {
 
   let store: Store
   if (process.env['TIDB_HOST']) {
+    const { TiDBStore } = await import('../store/tidb.js')
     store = new TiDBStore()
   } else {
+    const { SqliteStore } = await import('../store/sqlite.js')
     store = new SqliteStore(dbPath)
   }
   await store.initialize()

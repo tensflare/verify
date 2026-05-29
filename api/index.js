@@ -1,5 +1,4 @@
 import { createApp } from '../dist/api/server.js'
-import { SqliteStore } from '../dist/store/sqlite.js'
 
 let app
 let initPromise
@@ -13,6 +12,7 @@ async function init() {
     await store.initialize()
     app = createApp(store)
   } else {
+    const { SqliteStore } = await import('../dist/store/sqlite.js')
     const store = new SqliteStore(':memory:')
     await store.initialize()
     app = createApp(store)
