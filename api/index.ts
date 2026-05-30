@@ -1,6 +1,6 @@
-import { createApp } from '../src/api/server'
-import { SqliteStore } from '../src/store/sqlite'
-import { TiDBStore } from '../src/store/tidb'
+import { createApp } from '../src/api/server.js'
+import { SqliteStore } from '../src/store/sqlite.js'
+import { TiDBStore } from '../src/store/tidb.js'
 
 let app: any
 let initPromise: Promise<void> | null = null
