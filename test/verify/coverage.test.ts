@@ -111,8 +111,8 @@ describe('checkCoverage', () => {
 })
 
 describe('COVERAGE_DECLARATIONS', () => {
-  it('has 3 sources declared', () => {
-    expect(COVERAGE_DECLARATIONS).toHaveLength(3)
+  it('has 2 sources declared', () => {
+    expect(COVERAGE_DECLARATIONS).toHaveLength(2)
   })
 
   it('each source has required fields', () => {
@@ -132,6 +132,6 @@ describe('formatCoverageMap', () => {
     const map = formatCoverageMap()
     expect(map).toBeTruthy()
     expect(map).toContain('LegalVerify')
-    expect(map).toContain('3 source(s) configured')
+    expect(map).toContain('2 source(s) configured')
   })
 })

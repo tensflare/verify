@@ -2,23 +2,37 @@ import type { VerifiableCitation } from '../schema.js'
 import type { SourceAdapter, SourceResult, CoverageResult } from './types.js'
 import { checkCoverage } from '../verify/coverage.js'
 
+interface CitationLookupResult {
+  citation: string
+  normalized_citations: string[]
+  start_index: number
+  end_index: number
+  status: number
+  error_message: string
+  clusters: Array<{
+    id: number
+    case_name: string
+    absolute_url: string
+  }>
+}
+
 export class CourtListenerAdapter implements SourceAdapter {
   readonly name = 'CourtListener'
   readonly priority = 1
-  readonly rateLimit = 500
+  readonly rateLimit = 1000
 
   readonly coverage = {
     source: 'CourtListener',
     jurisdictions: ['US'],
     coverageType: 'partial' as const,
-    dateRange: { from: '1754-01-01', to: 'present' },
+    dateRange: { from: '1658-01-01', to: 'present' },
     updateFrequency: 'daily',
     knownGaps: ['Not all state trial courts', 'Tribal courts not covered'],
-    accessRestrictions: ['2 req/s on free tier'],
-    confidence: 0.95,
+    accessRestrictions: ['Token auth required', '60 citations/min on free tier'],
+    confidence: 0.97,
   }
 
-  private baseUrl = 'https://www.courtlistener.com/api/rest/v3'
+  private baseUrl = 'https://www.courtlistener.com/api/rest/v4'
   private apiKey: string
 
   constructor() {
@@ -41,27 +55,64 @@ export class CourtListenerAdapter implements SourceAdapter {
       return { found: false, error: 'Unsupported jurisdiction', responseTimeMs: Date.now() - start }
     }
 
+    if (!this.apiKey) {
+      return { found: false, error: 'COURTLISTENER_API_KEY not configured', responseTimeMs: Date.now() - start }
+    }
+
     const coverage = this.checkCoverage(citation)
     if (!coverage.covered) {
       return { found: false, error: 'Outside coverage', coverageNote: coverage.gapNote, responseTimeMs: Date.now() - start }
     }
 
     try {
-      const url = `${this.baseUrl}/opinions/?citation=${encodeURIComponent(citation.normalized_text)}&format=json`
+      const url = `${this.baseUrl}/citation-lookup/`
+      const body = new URLSearchParams({ text: citation.normalized_text })
       const response = await fetch(url, {
-        headers: this.apiKey ? { Authorization: `Token ${this.apiKey}` } : {},
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${this.apiKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
         signal: AbortSignal.timeout(10000),
       })
 
       if (!response.ok) {
-        return { found: false, error: `HTTP ${response.status}`, responseTimeMs: Date.now() - start }
+        const text = await response.text().catch(() => '')
+        return { found: false, error: `HTTP ${response.status}${text ? ': ' + text.slice(0, 200) : ''}`, responseTimeMs: Date.now() - start }
       }
 
-      const data = await response.json() as { count: number; results: Array<{ id: number; case_name: string }> }
+      const data = await response.json() as CitationLookupResult[]
+      const result = data[0]
+
+      if (!result) {
+        return { found: false, error: 'No citation found in response', responseTimeMs: Date.now() - start }
+      }
+
+      if (result.status === 200) {
+        const cluster = result.clusters?.[0]
+        return {
+          found: true,
+          url: cluster?.absolute_url ?? `https://www.courtlistener.com/opinion/${cluster?.id}/`,
+          responseTimeMs: Date.now() - start,
+        }
+      }
+
+      if (result.status === 300) {
+        return {
+          found: true,
+          url: result.clusters?.[0]?.absolute_url,
+          responseTimeMs: Date.now() - start,
+        }
+      }
+
+      if (result.status === 404) {
+        return { found: false, responseTimeMs: Date.now() - start }
+      }
 
       return {
-        found: data.count > 0,
-        url: data.count > 0 ? `https://www.courtlistener.com/opinion/${data.results[0].id}/` : undefined,
+        found: false,
+        error: result.error_message || `Citation lookup returned status ${result.status}`,
         responseTimeMs: Date.now() - start,
       }
     } catch (err) {

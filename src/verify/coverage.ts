@@ -18,21 +18,7 @@ export const COVERAGE_DECLARATIONS: CoverageDeclaration[] = [
     accessRestrictions: ['2 req/s on free tier', '10 req/s on authenticated tier'],
     confidence: 0.95,
   },
-  {
-    source: 'Harvard Caselaw Access Project',
-    jurisdictions: ['US', 'US-AL', 'US-AK', 'US-AZ', 'US-AR', 'US-CA', 'US-CO', 'US-CT', 'US-DE', 'US-FL', 'US-GA', 'US-HI', 'US-ID', 'US-IL', 'US-IN', 'US-IA', 'US-KS', 'US-KY', 'US-LA', 'US-ME', 'US-MD', 'US-MA', 'US-MI', 'US-MN', 'US-MS', 'US-MO', 'US-MT', 'US-NE', 'US-NV', 'US-NH', 'US-NJ', 'US-NM', 'US-NY', 'US-NC', 'US-ND', 'US-OH', 'US-OK', 'US-OR', 'US-PA', 'US-RI', 'US-SC', 'US-SD', 'US-TN', 'US-TX', 'US-UT', 'US-VT', 'US-VA', 'US-WA', 'US-WV', 'US-WI', 'US-WY'],
-    coverageType: 'partial',
-    dateRange: { from: '1658-01-01', to: '2018-06-30' },
-    updateFrequency: 'static (project concluded)',
-    knownGaps: [
-      'No cases after June 2018',
-      'Not all state volumes completed',
-      'Some OCR quality issues in early volumes',
-    ],
-    accessRestrictions: ['5 req/s', 'Some volumes require authentication'],
-    confidence: 0.98,
-  },
-  {
+{
     source: 'Google Scholar',
     jurisdictions: ['US', 'AU', 'CA', 'UK'],
     coverageType: 'limited',

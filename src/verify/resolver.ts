@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid'
 import type { VerifiableCitation, CitationVerification, SourceCheck } from '../schema.js'
 import type { SourceAdapter } from '../sources/types.js'
 import { CourtListenerAdapter } from '../sources/courtlistener.js'
-import { CAPAdapter } from '../sources/cap.js'
 import { GoogleScholarAdapter } from '../sources/google-scholar.js'
 import { LocalCorpusAdapter } from '../sources/local-corpus.js'
 import { checkCoverage } from './coverage.js'
@@ -14,8 +13,7 @@ export class SourceResolver {
     this.adapters = adapters ?? [
       new LocalCorpusAdapter(),
       new CourtListenerAdapter(),
-      new CAPAdapter(),
-      new GoogleScholarAdapter(),
+new GoogleScholarAdapter(),
     ]
   }
 

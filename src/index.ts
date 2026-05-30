@@ -99,7 +99,6 @@ export { formatCoverageMap, COVERAGE_DECLARATIONS, checkCoverage } from './verif
 export { formatScopeNotice, SCOPE_SHORT, SCOPE_NOTICE } from './verify/scope.js'
 export { SourceResolver } from './verify/resolver.js'
 export { CourtListenerAdapter } from './sources/courtlistener.js'
-export { CAPAdapter } from './sources/cap.js'
 export { GoogleScholarAdapter } from './sources/google-scholar.js'
 export { LocalCorpusAdapter } from './sources/local-corpus.js'
 export { SqliteStore } from './store/sqlite.js'
