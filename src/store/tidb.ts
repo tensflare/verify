@@ -105,7 +105,7 @@ export class TiDBStore implements Store {
           normalized_text TEXT NOT NULL,
           status VARCHAR(50) NOT NULL,
           confidence DOUBLE NOT NULL DEFAULT 0.0,
-          source_urls TEXT NOT NULL DEFAULT '[]',
+          source_urls TEXT,
           verification_count INT NOT NULL DEFAULT 1,
           first_seen TEXT NOT NULL,
           last_seen TEXT NOT NULL,
