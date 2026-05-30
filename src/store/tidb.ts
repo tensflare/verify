@@ -36,7 +36,7 @@ export class TiDBStore implements Store {
       user: dbConfig.user,
       password: dbConfig.password,
       database: dbConfig.database,
-      ssl: {},
+      ssl: { rejectUnauthorized: true },
       waitForConnections: true,
       connectionLimit: 5,
       maxIdle: 5,
