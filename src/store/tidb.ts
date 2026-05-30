@@ -4,16 +4,38 @@ import type { Store } from './index.js'
 import type { MagicToken } from '../auth/magic.js'
 import type { ApiKey } from '../auth/keys.js'
 
+function parseDatabaseUrl(url: string): { host: string; port: number; user: string; password: string; database: string } {
+  const parsed = new URL(url)
+  return {
+    host: parsed.hostname,
+    port: Number(parsed.port) || 4000,
+    user: decodeURIComponent(parsed.username),
+    password: decodeURIComponent(parsed.password),
+    database: parsed.pathname.replace(/^\//, '') || 'legalverify',
+  }
+}
+
 export class TiDBStore implements Store {
   private pool: Pool
 
   constructor() {
+    const dbUrl = process.env['DATABASE_URL']
+    const dbConfig = dbUrl
+      ? parseDatabaseUrl(dbUrl)
+      : {
+          host: process.env['TIDB_HOST'] ?? 'localhost',
+          port: Number(process.env['TIDB_PORT'] ?? 4000),
+          user: process.env['TIDB_USER'] ?? 'root',
+          password: process.env['TIDB_PASSWORD'] ?? '',
+          database: process.env['TIDB_DATABASE'] ?? 'legalverify',
+        }
+
     this.pool = createPool({
-      host: process.env['TIDB_HOST'] ?? 'localhost',
-      port: Number(process.env['TIDB_PORT'] ?? 4000),
-      user: process.env['TIDB_USER'] ?? 'root',
-      password: process.env['TIDB_PASSWORD'] ?? '',
-      database: process.env['TIDB_DATABASE'] ?? 'legalverify',
+      host: dbConfig.host,
+      port: dbConfig.port,
+      user: dbConfig.user,
+      password: dbConfig.password,
+      database: dbConfig.database,
       waitForConnections: true,
       connectionLimit: 5,
       maxIdle: 5,

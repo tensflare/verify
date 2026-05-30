@@ -4,10 +4,18 @@ let initPromise
 async function init() {
   if (app) return
   const { createApp } = await import('../dist/api/server.js')
-  const { SqliteStore } = await import('../dist/store/sqlite.js')
-  const store = new SqliteStore(':memory:')
-  await store.initialize()
-  app = createApp(store)
+
+  if (process.env.TIDB_HOST) {
+    const { TiDBStore } = await import('../dist/store/tidb.js')
+    const store = new TiDBStore()
+    await store.initialize()
+    app = createApp(store)
+  } else {
+    const { SqliteStore } = await import('../dist/store/sqlite.js')
+    const store = new SqliteStore(':memory:')
+    await store.initialize()
+    app = createApp(store)
+  }
 }
 
 export default async function handler(req, res) {
