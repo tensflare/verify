@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf'
 import type { DocumentVerification, CitationVerification, ComplianceReport } from '../schema.js'
 import { SCOPE_SHORT } from '../verify/scope.js'
+import { logoBase64 } from './logo.js'
 
 const GREEN = '#3B6D11'
 const DARK = '#111110'
@@ -37,7 +38,8 @@ export function generateVerificationPdf(dv: DocumentVerification, compliance?: C
   }
 
   // Header
-  bold('LegalVerify', 18, GREEN)
+  doc.addImage(logoBase64, 'PNG', margin, y, 40.8, 16.8)
+  y += 22
   normal('Citation Verification Report', 8, GRAY)
   line(8)
   doc.setDrawColor(GRAY)
